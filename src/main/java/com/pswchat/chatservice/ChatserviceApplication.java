@@ -8,6 +8,8 @@ public class ChatserviceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ChatserviceApplication.class, args);
+		
+		System.out.println("테스트");
 	}
 
 }
