@@ -40,3 +40,39 @@
 		자동 구성(Auto-configration)
 		- 해결) property 파일에 exclude를 통해 JDBC 관련 옵션들을 exclude로 처리
 		==> 프로젝트를 생성할때 DB 구성에 대해 조금 더 신경써서 생성할 필요가 있을 것
+		
+		
+		
+		
+*프로젝트의 기본 구성을 끝내고 mvc패턴을 구현해서 crud를 통해 DB연동 테스트를 하려고 했으나
+jakarta.servlet.ServletException: Circular view path [chats] 
+와 같은 에러가 발생함
+
+문제 원인 )
+    @PostMapping("/chats")
+    public ChatCollections createChat(ChatCollections chatCollections) {
+        return chatService.createChat(chatCollections);
+    }
+    이러한 코드를 통해 객체를 생성하고, 그대로 객체를 리턴했는데 
+    스프링에서는 이를 뷰이름으로 인식하여 뷰를 찾으려고하는데 뷰가 없기 떄문에 계속해서 순환참조 현상이 발생함
+    
+    ==> 1. ResponseEntity 나 ModelAndView를 통해 직접 객체가 모델 데이터임을 명시해주는 방법
+    	2. ResponseBody 어노테이션이나 Controller 대신 RestController를 사용함으로써
+    	객체가 응답 본문으로 직접 사용되어야 함을 명시해줌 
+    	
+    	## Spring을 사용할때 반환 값을 명확하게 제어해야 한다!!
+    	
+    	
+*postman을 통해 직접 json을 전송해서 보냈으나
+chat_id 말고 다른 파라미터들은 null이 전송되는 에러가 발생함
+==> 디버그를 통해 파라미터를 아예 못받아오고 있음. chat_id는 기본 id 생성자로 자동으로 추가되고 있는듯 함
+==> postman으로 보내는 요청 본문(body)를 객체로 변환하기 위한 코드가 빠져있었음. 
+@RequestBody 어노테이션을 컨트롤러에 추가해서 받아온 json 데이터를 객체로 반환시켜서 해결함
+
+
+
+*findAll() 메서드를 추가로 구현해서 데이터를 잘 생성하고 정보를 반환하고 있는것을 확인
+==> 하지만 컨테이너 내부 쉘에서는 데이터가 비어있는 것으로 확인
+mongoDBinfo를 출력하는 클래스를 만들어서 현재 DB가 test(mongo의 기본 db)에서 chatservice라는 컬렉션을 생성하고 마구 집어넣고 있다는 것을 확인함
+찾아보니 명시적인 DB를 property파일에 적어놓지 않아서 발생한 문제
+==> 이를 해결하기 위해 property 파일에 데이터베이스를 명시적으로 작성해 놓도록 함
