@@ -8,12 +8,12 @@ import lombok.Data;
 
 @Data
 @Document(collection = "chatservice")
-public class ChatCollections {
+public class Chat {
 
 	@Id
-	private int chat_id;
+	private String chat_id;
 	
-	private int room_id;
+	private String room_id;
 	private String content;
 	private String createdName;
 	private Date createdDate;
