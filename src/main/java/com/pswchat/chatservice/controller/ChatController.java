@@ -1,14 +1,18 @@
 package com.pswchat.chatservice.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.pswchat.chatservice.domain.ChatCollections;
+import com.pswchat.chatservice.domain.Chat;
+import com.pswchat.chatservice.repository.ChatRepository;
 import com.pswchat.chatservice.service.ChatService;
 
-@Controller
+@RestController
 public class ChatController {
 	private final ChatService chatservice;
 	
@@ -17,9 +21,14 @@ public class ChatController {
 		this.chatservice = chatservice;
 	}
 	
-	@PostMapping("/chats")
-	public ChatCollections createChat(@RequestBody ChatCollections chatcollections) {
-		return chatservice.createChat(chatcollections);
+	@PostMapping("/createchat")
+	public Chat createChat(@RequestBody Chat chat) {
+		return chatservice.createChat(chat);
+	}
+	
+	@GetMapping("/chatlist")
+	public List<Chat> findAll(){
+		return chatservice.findChat();
 	}
 	
 	
