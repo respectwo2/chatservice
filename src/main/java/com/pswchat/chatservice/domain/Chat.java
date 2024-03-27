@@ -1,13 +1,21 @@
 package com.pswchat.chatservice.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import lombok.Data;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Builder
 @Data
 @Document(collection = "chatservice")
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Chat {
 
 	@Id
@@ -16,7 +24,7 @@ public class Chat {
 	private String room_id;
 	private String content;
 	private String createdName;
-	private Date createdDate;
+	private LocalDateTime createdDate;
 	
-	
-}
+	}
+
