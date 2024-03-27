@@ -40,10 +40,5 @@ public class ChatController {
 		return chatservice.findChat();
 	}
 	
-	@PostMapping("/main")
-	public ModelAndView mainPage() {
-		ModelAndView modelandview = new ModelAndView();
-		modelandview.setViewName("main");
-		return modelandview;
-	}
+
 }
