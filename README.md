@@ -12,7 +12,7 @@
 
 ---
 
-### 기초 설정 순서
+### 1. 기초 설정
 
 1. 프로젝트 생성 및 dependency 주입
 2. docker-compose 사용을 위한 yaml 파일 생성 및 `docker-compose up`
@@ -49,3 +49,11 @@
     - 해결) property 파일에 데이터베이스를 명시적으로 작성
 
 
+### 2. JSON 데이터 HTTP 통신을 통해 데이터 보내기
+
+1. 기본적인 controller, entity, service 등 MVC 패턴을 구성함
+2. room_id, content, createdname을 입력받는 간단한 html 구성
+	*기본 id를 chat_id로 설정하고 autoincrement 하는 것이 필요
+		- mySQL 같은 DB일 경우에는 generatedValue 어노테이션으로 사용 가능하나
+		mongoDB에서는 작동하지 않기에 별도의 컬렉션 생성을 통해 관리해야함. 
+		하지만 본 프로젝트에서는 필요하지 않다고 판단하기에 해당 작업은 수행하지 않기로 결정
