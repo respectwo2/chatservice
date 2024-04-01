@@ -40,5 +40,9 @@ public class ChatController {
 		return chatservice.findChat();
 	}
 	
+	@GetMapping("/delete")
+	public void deleteAll() {
+		chatservice.deleteAll();
+	}
 
 }

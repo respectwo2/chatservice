@@ -24,6 +24,9 @@ public class ChatService {
 	public List<Chat> findChat() {
 		return chatRepository.findAll();
 	}
-	
+
+	public void deleteAll() {
+		chatRepository.deleteAll();
+	}
 	
 }
