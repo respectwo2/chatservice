@@ -1,16 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>메세지 앱</title>
+    <title>Chat Message Sender</title>
 </head>
 <body>
-    <h2>채팅</h2>
-    <div id="chatMessages"></div>
-    <input type="text" id="roomId" placeholder="Room ID">
-    <input type="text" id="content" placeholder="메시지 입력">
-    <input type="text" id="createName" placeholder="이름">
-    <button onclick="sendMessage()">메시지 보내기</button>
+    <h2>Send Message</h2>
+    <form id="messageForm">
+        chat_ID: <input type="text" name="chat_id" /><br />
+        Room ID: <input type="text" name="room_id" /><br />
+        Content: <input type="text" name="content" /><br />
+        Create Name: <input type="text" name="createName" /><br />
 
-    <script src="chat.js"></script>
+        <button type="button" onclick="sendMessage()">Send</button>
+    </form>
+
+    <script>
+        function sendMessage() {
+            var formData = new FormData(document.getElementById('messageForm'));
+
+            // 폼 데이터를 JSON으로 변환
+            var object = {};
+            formData.forEach(function(value, key){
+                object[key] = value;
+            });
+            var json = JSON.stringify(object);
+
+            // AJAX 요청으로 서버에 데이터 전송
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/createchat", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // 성공적으로 메시지를 전송한 후의 처리 (예: 폼 초기화)
+                    console.log("Message sent successfully");
+                }
+            };
+            xhr.send(json);
+        }
+    </script>
 </body>
 </html>
