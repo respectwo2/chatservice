@@ -90,4 +90,16 @@
 		-config에서 실무에서는 특정 도메인만을 허용해야함.
 		특정사용자에게 메세지를 보내거나 고도화된 서비스를 사용하게 될 시 STMOP 통신을 고려해야함
 		
+		
+- *postman에서 연결 404 에러 발생*:
+    - 핸들러와 config를 작성한 후 postman을 통해 websocket 요청을 보냈는데 지속적으로
+    404 에러가 뜨는 현상이 발생함
+    property 에서 debug 모드를 활성화 한후 로깅한 결과
+    SocketJS 에러인 것으로 확인함
+    withSocketJS코드는 웹소켓을 지원하지 않는 브라우저에서도 접속할 수 있게 해주는 코드인데
+    왜 에러가 발생하는지 찾지 못해 일단 해당 코드를 주석처리한 후 제대로 연결되는 것을 확인함
 	
+	
+- *Gson 에러 발생*:
+	- Chat entity에 LocalDatetime 타입으로 설정해놓은 필드를 Gson이 변환해서 가져오지 못하는 현상 발생
+	Adapter를 작성해 LocalDatetime을 Gson이 가져오게 변경함
