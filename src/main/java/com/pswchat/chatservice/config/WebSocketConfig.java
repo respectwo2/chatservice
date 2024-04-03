@@ -23,6 +23,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     	//핸들러 설정, 와일드카드 옵션으로 모든 도메인을 허용시키고
     	//withSockJS는 웹소켓을 지원하지 않는 브라우저에서도 사용가능하게만듬
-        registry.addHandler(myWebSocketHandler, "/chat").setAllowedOrigins("*").withSockJS();
+
+    	//SocketJS 오류 발생해 주석 처리 후 해당 코드 삭제
+    	//registry.addHandler(myWebSocketHandler, "/chat").setAllowedOrigins("*").withSockJS();
+    	registry.addHandler(myWebSocketHandler, "/chat").setAllowedOrigins("*");
     }
 }
