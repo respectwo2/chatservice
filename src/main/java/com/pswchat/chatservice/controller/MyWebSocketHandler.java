@@ -25,9 +25,8 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 	public void afterConnectionEstablished(WebSocketSession session) throws IOException {
 		System.out.println("연결 세션 ID" + session.getId());
 		String name = session.getHandshakeHeaders().get("createdName").get(0);
-        sessionList.add(session); // 새로운 세션을 리스트에 추가
-//		System.out.println(name + " 입장함"); 
-//		sessionList.get(0).sendMessage(new TextMessage(name+" 사용자께서 입장하셨습니다"));
+        sessionList.add(session); 
+        
         sessionList.forEach(s-> {
             try {
                 s.sendMessage(new TextMessage(name+"님께서 입장하셨습니다."));

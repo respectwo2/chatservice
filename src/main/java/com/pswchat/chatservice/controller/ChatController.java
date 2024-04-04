@@ -44,5 +44,7 @@ public class ChatController {
 	public void deleteAll() {
 		chatservice.deleteAll();
 	}
+	
+	
 
 }
