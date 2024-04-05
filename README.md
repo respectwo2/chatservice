@@ -103,3 +103,30 @@
 - *Gson 에러 발생*:
 	- Chat entity에 LocalDatetime 타입으로 설정해놓은 필드를 Gson이 변환해서 가져오지 못하는 현상 발생
 	Adapter를 작성해 LocalDatetime을 Gson이 가져오게 변경함
+	
+	
+4. **어떻게 view와 websocket을 구현한 채팅방을 연결할 것인가??**
+	- 1. view에서 입력받은 createdName과 room_id를 session에 저장하고
+	이걸 websocket의 session과 연결한다?? (구현의 핵심 과제)
+	HttpHandshakeInterceptor 를 사용 ( HTTP 세션과 Websocket 세션 연결 )
+	
+4-1) 선택 가능한 옵션
+	1) URL를 통한 식별 방식
+	2) DB또는 메모리를 기반으로 해 서버내에서 처리하는 방식
+	3) JWT 토큰 또는 세션을 이용한 관리 방식
+	
+
+5. chatRoom 에서의 채팅을 json 형태의 메세지로 변환하고,
+	세션을 통해 createdName과 room_id를 받아서 웹소켓으로 연결
+	
+		5-1)경로 변수를 사용하기 위해서 연결된 websocket 세션에서 경로 변수를 추출하는 방법이 필요.
+		websocketsession에 저장된 URI 정보를 사용해서 경로 변수를 파싱하는 getRoomIDfromPath 메서드를 작성해서 사용
+		
+		
+6. postman을 통해 경로에 따른 웹소켓 연결이 잘 작동하는걸 확인했지만,
+URI로 직접 검색했을때는 Can "Upgrade" only to "WebSocket" 라는 오류가 발생하는걸 확인함
+	검색 결과 주요 원인은로
+	6-1) 클라이언트측에서 웹소켓 연결을 시도할때 upgrade 헤더를 포함하지 않았기 떄문 (이쪽이 유력)
+	6-2) 프록시서버나 로드밸런스 쪽의 문제
+	
+	
