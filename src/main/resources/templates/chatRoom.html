@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>채팅방</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div id="chat">
+        <div id="messages" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc;"></div>
+        <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
+        <button id="sendButton">보내기</button>
+    </div>
+
+    <script>
+        let ws;
+
+        function connect() {
+            // URL에서 room_id 값을 추출합니다.
+            const roomId = new URLSearchParams(window.location.search).get('room_id');
+            // WebSocket 연결 시 room_id를 경로에 포함시킵니다.
+			ws = new WebSocket('ws://localhost:8080/chatRoom'+roomId);
+
+            ws.onmessage = function(event) {
+                let message = JSON.parse(event.data);
+                document.getElementById('messages').innerHTML += '<div>' + message + '</div>';
+            };
+
+            ws.onclose = function(event) {
+                console.log('WebSocket 연결이 종료되었습니다.');
+            };
+
+            ws.onerror = function(event) {
+                console.error('WebSocket 에러 발생:', event);
+            };
+        }
+
+        document.getElementById('sendButton').addEventListener('click', function() {
+            let messageContent = document.getElementById('messageInput').value;
+            if (messageContent && ws) {
+                ws.send(JSON.stringify({ content: messageContent })); // 메시지 형식에 맞게 조정하세요.
+                document.getElementById('messageInput').value = '';
+            }
+        });
+
+        window.onload = function() {
+            connect();
+        };
+    </script>
+</body>
+</html>

@@ -35,15 +35,14 @@ public class ViewController {
 	public String enterChatRoom(@RequestParam("room_id") String room_id, @RequestParam("createdName") String createdName, HttpSession session) {
 	    session.setAttribute("room_id", room_id);
 	    session.setAttribute("createdName", createdName);
-	    return "redirect:/chatRoom/" + room_id; 
+
+	    return "redirect:/chatRoom" + room_id; 
 	}
 
     
     @GetMapping("/chatRoom/{room_id}")
-    public String chatRoom(@PathVariable("room_id") String room_id, Model model) {
-
-        model.addAttribute("room_id", room_id);
-   
+    public String chatRoom(@PathVariable("room_id") String room_id, Model model,HttpSession session) {
+    	model.addAttribute("room_id", room_id);
         return "chatRoom"; 
     }
 
