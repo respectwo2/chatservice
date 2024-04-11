@@ -5,50 +5,28 @@
     <meta charset="UTF-8">
 </head>
 <body>
-    <div id="chat">
+    <h2>채팅 룸 입장하기</h2>
+    <form id="enterChatRoomForm">
+        <div>
+            <label for="room_id">Room ID:</label>
+            <input type="text" id="room_id" name="room_id" />
+        </div>
+        <div>
+            <label for="createdName">이름:</label>
+            <input type="text" id="createdName" name="createdName" />
+        </div>
+        <div>
+            <button type="submit">입장하기</button>
+        </div>
+    </form>
+
+    <div id="chat" style="display: none;">
         <div id="messages" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc;"></div>
         <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
         <button id="sendButton">보내기</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
-    <script>
-		let ws;
-		function connect() {
-		    const roomId = new URLSearchParams(window.location.search).get('room_id');
-		    const sockJsUrl = `http://localhost:8080/chatRoom/sockjs?roomId=${roomId}`;
-		    ws = new SockJS(sockJsUrl);
-		
-		    ws.onopen = function() {
-		        console.log('Connection to room', roomId, 'opened');
-		    };
-		
-		    ws.onmessage = function(event) {
-		        let message = JSON.parse(event.data);
-		        document.getElementById('messages').innerHTML += '<div>' + message + '</div>';
-		    };
-		
-		    ws.onclose = function() {
-		        console.log('Connection closed');
-		    };
-		
-		    ws.onerror = function(error) {
-		        console.error('WebSocket error:', error);
-		    };
-		}
-		
-		document.getElementById('sendButton').addEventListener('click', function() {
-		    let messageContent = document.getElementById('messageInput').value;
-		    if (messageContent && ws) {
-		        ws.send(JSON.stringify({ content: messageContent }));
-		        document.getElementById('messageInput').value = '';
-		    }
-		});
-		
-		window.onload = function() {
-		    connect();
-		};
-		
-	</script>
+	<script src="/js/chatRoom.js"></script>
 </body>
 </html>

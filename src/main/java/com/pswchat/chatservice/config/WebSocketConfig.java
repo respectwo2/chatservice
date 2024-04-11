@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(myWebSocketHandler, "/chatRoom/sockjs")
-                .setAllowedOrigins("*")
+        		.setAllowedOriginPatterns("http://localhost:8080")
                 .withSockJS();
     }
 
