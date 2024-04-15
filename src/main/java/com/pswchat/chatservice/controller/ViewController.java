@@ -17,7 +17,7 @@ public class ViewController {
 
 	@GetMapping("/enter")
 	public ModelAndView showChatEntryForm() {
-	    ModelAndView modelAndView = new ModelAndView("enter");
+	    ModelAndView modelAndView = new ModelAndView("chatRoom");
 	    modelAndView.addObject("chat", new Chat());
 	    return modelAndView;
 	}

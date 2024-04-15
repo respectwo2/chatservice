@@ -36,7 +36,7 @@ function sendMessage() {
     if (messageContent && ws) {
         // 임시로 여기에 메시지를 출력하는 코드를 추가합니다.
         console.log("전송된 메시지:", messageContent);
-        // ws.send(JSON.stringify({ content: messageContent }));
+        ws.send(JSON.stringify({ content: messageContent }));
         document.getElementById('messageInput').value = '';
     }
 }
