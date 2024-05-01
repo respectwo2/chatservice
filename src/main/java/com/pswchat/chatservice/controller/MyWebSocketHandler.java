@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Controller;
@@ -25,35 +26,41 @@ import com.pswchat.chatservice.domain.Chat;
 
 @Controller
 public class MyWebSocketHandler extends TextWebSocketHandler {
-    private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+	private Map<String, List<WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
 
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        Map<String, String> uriParams = getUriParams(session);
-        String roomId = uriParams.get("room_id");
-        String createdName = uriParams.get("createdName");
-        sessions.put(session.getId(), session);
-        System.out.println("새 클라이언트와 연결되었습니다. Room ID: " + roomId);
+	@Override
+	public void afterConnectionEstablished(WebSocketSession session) {
+	    Map<String, String> uriParams = getUriParams(session);
+	    String roomId = uriParams.get("room_id");
+	    if (!roomSessions.containsKey(roomId)) {
+	        roomSessions.put(roomId, new ArrayList<>());
+	    }
+	    
+	    roomSessions.get(roomId).add(session);
+	    System.out.println("새 연결 Room ID: " + roomId);
+	}
 
-    }
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session,
-                                     TextMessage message) throws IOException {
-        for (WebSocketSession webSocketSession : sessions.values()) {
-            if (webSocketSession.isOpen()) {
-                webSocketSession.sendMessage(message);
-            }
-        }
 
-        
-    }
+	@Override
+	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
+	    Map<String, String> uriParams = getUriParams(session);
+	    String roomId = uriParams.get("room_id");
 
+	    List<WebSocketSession> sessionsInRoom = roomSessions.get(roomId);
+	    if (sessionsInRoom != null) {
+	        for (WebSocketSession webSocketSession : sessionsInRoom) {
+	            if (webSocketSession.isOpen()) {
+	                webSocketSession.sendMessage(message);
+	            }
+	        }
+	    }
+	}
     @Override
     public void afterConnectionClosed(WebSocketSession session,
                                       CloseStatus status) {
-        sessions.remove(session.getId());
+    	roomSessions.remove(session.getId());
         System.out.println("클라이언트와의 연결이 해제되었습니다. Session ID: " + session.getId());
     }
     
