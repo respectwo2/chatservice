@@ -30,15 +30,26 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
 
 	@Override
-	public void afterConnectionEstablished(WebSocketSession session) {
+	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 	    Map<String, String> uriParams = getUriParams(session);
 	    String roomId = uriParams.get("room_id");
+	    String userName = uriParams.get("createdName"); 
+	    
 	    if (!roomSessions.containsKey(roomId)) {
 	        roomSessions.put(roomId, new ArrayList<>());
 	    }
-	    
 	    roomSessions.get(roomId).add(session);
-	    System.out.println("새 연결 Room ID: " + roomId);
+
+	    List<WebSocketSession> sessionsInRoom = roomSessions.get(roomId);
+	    String joinMessage = userName + "님이 채팅방에 참여하셨습니다.";
+	    TextMessage greetingMessage = new TextMessage(joinMessage);
+	    
+	    for (WebSocketSession webSocketSession : sessionsInRoom) {
+	        if (webSocketSession.isOpen() && !webSocketSession.getId().equals(session.getId())) {
+	            webSocketSession.sendMessage(greetingMessage);
+	            System.out.println(greetingMessage);
+	        }
+	    }
 	}
 
 
