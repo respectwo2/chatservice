@@ -1,8 +1,9 @@
 let ws;
+var isConnected = false; // 연결 상태를 관리하기 위한 변수
 
-function connect(room_id,createdName) {
+function connect(room_id, createdName) {
     const sockJsUrl = `http://localhost:8080/chatRoom/sockjs?room_id=${room_id}&createdName=${createdName}`;
-    
+
     ws = new SockJS(sockJsUrl);
 
     ws.onopen = function() {
@@ -10,12 +11,15 @@ function connect(room_id,createdName) {
         document.getElementById('chat').style.display = 'block';
         
         const greetingMessage = {
-        content: `${createdName}님이 방에 입장하셨습니다.`,
-        room_id: room_id,
-        createdName: createdName
-    };
-    ws.send(JSON.stringify(greetingMessage));
+            content: `${createdName}님이 방에 입장하셨습니다.`,
+            room_id: room_id,
+            createdName: createdName
+        };
+        ws.send(JSON.stringify(greetingMessage));
 
+        document.getElementById('enterOrLeaveButton').innerText = '퇴장하기'; // 버튼 텍스트 변경
+        isConnected = true; 
+        console.log(createdName)
     };
 
     ws.onmessage = function(event) {
@@ -25,11 +29,29 @@ function connect(room_id,createdName) {
 
     ws.onclose = function() {
         console.log('Connection closed');
+        console.log()
+        document.getElementById('chat').style.display = 'none';
+        document.getElementById('enterOrLeaveButton').innerText = '입장하기'; // 버튼 텍스트 변경
+        isConnected = false; // 연결 상태를 거짓으로 변경
     };
 
     ws.onerror = function(error) {
         console.error('WebSocket error:', error);
     };
+}
+
+function disconnect(room_id, createdName) {
+
+    const leaveMessage = {
+        content: `${createdName}님이 방을 떠났습니다.`,
+        room_id: room_id,
+        createdName: createdName
+    };
+    ws.send(JSON.stringify(leaveMessage));
+
+    ws.close();
+
+    document.getElementById('enterOrLeaveButton').textContent = '입장하기';
 }
 
 function displayMessage(message) {
@@ -53,14 +75,12 @@ function sendMessage() {
     }	
 }
 
-
-
 document.getElementById('sendButton').addEventListener('click', function() {
     sendMessage();
 });
 
 document.getElementById('messageInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
+    if (event.key === '입장하기') {
         sendMessage();
     }
 });
@@ -69,5 +89,21 @@ document.getElementById('enterChatRoomForm').addEventListener('submit', function
     event.preventDefault();
     const room_id = document.getElementById('room_id').value;
     const createdName = document.getElementById('createdName').value;
-    connect(room_id,createdName);
+    const enterOrLeaveButton = document.getElementById('enterOrLeaveButton'); 
+    if (enterOrLeaveButton.textContent === '입장하기') {
+        connect(room_id, createdName);
+    } else {
+        disconnect(room_id, createdName);
+    }
+});
+
+document.getElementById('enterOrLeaveButton').addEventListener('click', function() {
+    const room_id = document.getElementById('room_id').value;
+    const createdName = document.getElementById('createdName').value;
+    // 연결 상태에 따라 입장 또는 퇴장 처리
+    if (!isConnected) {
+        connect(room_id, createdName);
+    } else {
+        disconnect(room_id, createdName);
+    }
 });
