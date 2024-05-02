@@ -30,26 +30,11 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
 
 	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+	public void afterConnectionEstablished(WebSocketSession session) {
 	    Map<String, String> uriParams = getUriParams(session);
 	    String roomId = uriParams.get("room_id");
-	    String userName = uriParams.get("createdName"); 
-	    
-	    if (!roomSessions.containsKey(roomId)) {
-	        roomSessions.put(roomId, new ArrayList<>());
-	    }
-	    roomSessions.get(roomId).add(session);
-
-	    List<WebSocketSession> sessionsInRoom = roomSessions.get(roomId);
-	    String joinMessage = userName + "님이 채팅방에 참여하셨습니다.";
-	    TextMessage greetingMessage = new TextMessage(joinMessage);
-	    
-	    for (WebSocketSession webSocketSession : sessionsInRoom) {
-	        if (webSocketSession.isOpen() && !webSocketSession.getId().equals(session.getId())) {
-	            webSocketSession.sendMessage(greetingMessage);
-	            System.out.println(greetingMessage);
-	        }
-	    }
+	    addSessionToRoom(roomId, session);
+	    System.out.println("새 연결 Room ID: " + roomId);
 	}
 
 
@@ -58,7 +43,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 	    Map<String, String> uriParams = getUriParams(session);
 	    String roomId = uriParams.get("room_id");
-
+	    
 	    List<WebSocketSession> sessionsInRoom = roomSessions.get(roomId);
 	    if (sessionsInRoom != null) {
 	        for (WebSocketSession webSocketSession : sessionsInRoom) {
@@ -68,12 +53,22 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 	        }
 	    }
 	}
-    @Override
-    public void afterConnectionClosed(WebSocketSession session,
-                                      CloseStatus status) {
-    	roomSessions.remove(session.getId());
-        System.out.println("클라이언트와의 연결이 해제되었습니다. Session ID: " + session.getId());
-    }
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+	    Map<String, String> uriParams = getUriParams(session);
+	    String roomId = uriParams.get("room_id");
+	    List<WebSocketSession> sessionsInRoom = roomSessions.get(roomId);
+	    if (sessionsInRoom != null) {
+	    	//닫힌 세션 제거
+	        sessionsInRoom.remove(session);
+	        if (sessionsInRoom.isEmpty()) {
+	        	//방에 연결된 세션이 없다면 방 삭제
+	            roomSessions.remove(roomId);
+	        }
+	    }
+	    System.out.println("연결 해제 Room ID: " + roomId);
+	}
+
     
     
     private Map<String, String> getUriParams(WebSocketSession session) {
@@ -86,4 +81,20 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         });
         return params;
     }
+    
+    public void addSessionToRoom(String roomId, WebSocketSession newSession) {
+        List<WebSocketSession> sessionsInRoom = roomSessions.get(roomId);
+        if (sessionsInRoom == null) {
+            sessionsInRoom = new ArrayList<>();
+            roomSessions.put(roomId, sessionsInRoom);
+        }
+
+        boolean sessionAlreadyExists = sessionsInRoom.stream()
+                                         .anyMatch(s -> s.getId().equals(newSession.getId()));
+
+        if (!sessionAlreadyExists) {
+            sessionsInRoom.add(newSession);
+        }
+    }
+
 }
