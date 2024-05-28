@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -20,15 +19,21 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.pswchat.chatservice.config.DateTimeUtil;
 import com.pswchat.chatservice.config.LocalDateTimeAdapter;
 import com.pswchat.chatservice.domain.Chat;
+import com.pswchat.chatservice.repository.ChatRepository;
 
 @Controller
 public class MyWebSocketHandler extends TextWebSocketHandler {
 	private Map<String, List<WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
+	private ChatRepository chatRepository;
 
+    @Autowired
+    public MyWebSocketHandler(ChatRepository chatRepository) {
+        this.chatRepository = chatRepository;
+    }
 
+	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
 	    Map<String, String> uriParams = getUriParams(session);
@@ -38,11 +43,32 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 	}
 
 
-
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 	    Map<String, String> uriParams = getUriParams(session);
+	    
 	    String roomId = uriParams.get("room_id");
+	    
+	    Gson gson = new GsonBuilder()
+	            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+	            .create();
+
+	    Chat chatMessage = gson.fromJson(message.getPayload(), Chat.class);
+	    
+	    String[] parts = chatMessage.getContent().split(": ", 2);
+	    String content = parts.length > 1 ? parts[1] : chatMessage.getContent();
+
+	    
+	    Chat chat = new Chat();
+	    chat.setRoom_id(roomId);
+	    chat.setContent(content);
+	    chat.setCreatedName(chatMessage.getCreatedName());
+	    chat.setCreatedDate(LocalDateTime.now());
+	    
+	    chatRepository.deleteAll(); // 테스트를 위한 기록 삭제 코드
+	    chatRepository.save(chat);
+	    
+	    System.out.println(chatRepository.findAll());
 	    
 	    List<WebSocketSession> sessionsInRoom = roomSessions.get(roomId);
 	    if (sessionsInRoom != null) {

@@ -52,6 +52,11 @@ function disconnect(room_id, createdName) {
     ws.close();
 
     document.getElementById('enterOrLeaveButton').textContent = '입장하기';
+    
+    //채팅내역을 지우는 코드
+    document.getElementById('messages').innerHTML = '';
+
+    
 }
 
 function displayMessage(message) {
@@ -107,3 +112,5 @@ document.getElementById('enterOrLeaveButton').addEventListener('click', function
         disconnect(room_id, createdName);
     }
 });
+
+

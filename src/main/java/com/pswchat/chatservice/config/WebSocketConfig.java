@@ -7,6 +7,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import com.pswchat.chatservice.controller.MyWebSocketHandler;
+import com.pswchat.chatservice.repository.ChatRepository;
 
 @Configuration
 @EnableWebSocket
@@ -15,7 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     private final MyWebSocketHandler myWebSocketHandler;
 
     @Autowired
-    public WebSocketConfig(MyWebSocketHandler myWebSocketHandler) {
+    public WebSocketConfig(MyWebSocketHandler myWebSocketHandler, ChatRepository chatRepository) {
         this.myWebSocketHandler = myWebSocketHandler;
     }
 
