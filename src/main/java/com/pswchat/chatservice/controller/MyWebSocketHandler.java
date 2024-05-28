@@ -55,6 +55,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
 	    Chat chatMessage = gson.fromJson(message.getPayload(), Chat.class);
 	    
+	    //greeting 메세지와 실제 메세지(content)를 구분해서 저장하기 위한 조건문
 	    String[] parts = chatMessage.getContent().split(": ", 2);
 	    String content = parts.length > 1 ? parts[1] : chatMessage.getContent();
 

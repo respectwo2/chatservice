@@ -7,20 +7,11 @@ import com.pswchat.chatservice.domain.Chat;
 
 @RestController
 public class ViewController {
-	
-	@GetMapping("/mainpage")
-	public ModelAndView mainPage() {
-		ModelAndView modelandview = new ModelAndView();
-		modelandview.setViewName("main");
-		return modelandview;
-	}
-	
-
 	@GetMapping("/enter")
 	public ModelAndView showChatEntryForm() {
-	    ModelAndView modelAndView = new ModelAndView("chatRoom");
-	    modelAndView.addObject("chat", new Chat());
-	    return modelAndView;
+		ModelAndView modelAndView = new ModelAndView("chatRoom");
+		modelAndView.addObject("chat", new Chat());
+		return modelAndView;
 	}
-	
+
 }
